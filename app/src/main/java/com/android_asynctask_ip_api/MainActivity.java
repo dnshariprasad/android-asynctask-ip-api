@@ -7,8 +7,6 @@ import android.util.Log;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.StringWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
@@ -41,7 +39,7 @@ public class MainActivity extends AppCompatActivity {
                 httpURLConnection.setRequestMethod("GET");
 
                 if (200 == httpURLConnection.getResponseCode()) {
-                    return receiveResponse(httpURLConnection.getInputStream());
+                    return readInputStream(httpURLConnection.getInputStream());
                 } else {
                     return "";
                 }
@@ -63,28 +61,14 @@ public class MainActivity extends AppCompatActivity {
         (new IpApiTask()).execute();
     }
 
-    public static String getStringFromInputStream(InputStream stream) throws IOException {
-        int n = 0;
-        char[] buffer = new char[1024 * 4];
-        InputStreamReader reader = new InputStreamReader(stream, "UTF8");
-        StringWriter writer = new StringWriter();
-        while (-1 != (n = reader.read(buffer))) writer.write(buffer, 0, n);
-        return writer.toString();
-    }
-
-    public static String receiveResponse(InputStream stream) throws IOException {
+    public static String readInputStream(InputStream stream) throws IOException {
         try {
-            int ch;
-            StringBuffer responseBuffer = new StringBuffer();
-            while ((ch = stream.read()) != -1) {
-                responseBuffer.append((char) ch);
-            }
-            return responseBuffer.toString();
+            int intChar;
+            StringBuilder responseBuilder = new StringBuilder();
+            while ((intChar = stream.read()) != -1) responseBuilder.append((char) intChar);
+            return responseBuilder.toString();
         } finally {
-            if (stream != null) {
-                stream.close();
-            }
+            if (stream != null) stream.close();
         }
     }
-
 }
