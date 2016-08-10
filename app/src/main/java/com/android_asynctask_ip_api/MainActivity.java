@@ -4,6 +4,10 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.widget.TextView;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -23,8 +27,15 @@ public class MainActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(String s) {
             super.onPostExecute(s);
-            if (s != null)
+            if (s != null) {
                 Log.d(TAG, "onPostExecute: " + s);
+                try {
+                    JSONObject jsonObject = new JSONObject(s);
+                    tv_city.setText(jsonObject.optString("city"));
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
         }
 
         @Override
@@ -53,11 +64,13 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private static final String TAG = "MainActivity";
+    private TextView tv_city;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        tv_city = (TextView) findViewById(R.id.tv_city);
         (new IpApiTask()).execute();
     }
 
